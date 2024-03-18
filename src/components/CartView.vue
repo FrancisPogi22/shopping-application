@@ -13,7 +13,11 @@
                 <button class="minus" @click="decrementQuantity(index)">
                   -
                 </button>
-                <input type="number" :value="item.quantity" />
+                <input
+                  type="number"
+                  v-model="item.quantity"
+                  @blur="checkQuantity(item)"
+                />
                 <button class="add" @click="incrementQuantity(index)">+</button>
               </div>
             </div>
@@ -31,7 +35,7 @@
           <div class="no-data">No product in shopping cart.</div>
         </div>
         <div v-if="cart.length > 0" class="cart-check-out">
-          <h6>-- RECEIPT -- </h6>
+          <h6>-- RECEIPT --</h6>
           <div class="check-out">
             <span v-for="(item, index) in cart" :key="index"
               >{{ item.name }} x {{ item.quantity }} = ₱{{
@@ -51,30 +55,26 @@
 <script>
 export default {
   props: ["cart"],
-  data() {
-    return {};
-  },
   methods: {
     removeProduct(index) {
       this.cart.splice(index, 1);
     },
     incrementQuantity(index) {
-      let item = this.cart[index];
-
-      item.quantity += 1;
+      this.cart[index].quantity += 1;
     },
     decrementQuantity(index) {
       let item = this.cart[index];
 
-      if (item.quantity > 1) {
-        item.quantity -= 1;
-      }
+      if (item.quantity > 1) item.quantity -= 1;
     },
     calculateItemPrice(item) {
       return item.price * item.quantity;
     },
     closeCart() {
       this.$emit("close-cart");
+    },
+    checkQuantity(item) {
+      if (item.quantity < 0 || item.quantity == 0) item.quantity = 1;
     },
   },
   computed: {
@@ -103,7 +103,6 @@ h1 {
   display: flex;
   justify-content: space-between;
   flex-wrap: wrap;
-
 }
 
 .check-out {
@@ -159,6 +158,7 @@ h1 {
 }
 
 .cart-widget h4 {
+  font-weight: 400;
   font-size: 18px;
 }
 
@@ -225,13 +225,13 @@ p span {
   filter: drop-shadow(0 4px 3px rgb(0 0 0 / 0.07))
     drop-shadow(0 2px 2px rgb(0 0 0 / 0.06));
   cursor: pointer;
-  background: #f87171;
+  background: #f43f5e;
   transition: 0.2s;
 }
 
 .btn-close:hover,
 .btn-remove:hover {
-  background: #ef4444;
+  background: #e11d48;
 }
 
 input::-webkit-outer-spin-button,
@@ -240,7 +240,7 @@ input::-webkit-inner-spin-button {
 }
 
 .btn-remove {
-  background: #f87171;
+  background: #f43f5e;
   color: #ffffff;
   border: none;
   padding: 10px 20px;
